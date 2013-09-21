@@ -133,6 +133,7 @@ man.prototype.update = function () {
                 // fudge a little on distance (9) above to prevent passing through object
                 foundground = true;
                 currplatform = i;
+                platforms[i].moveVert = 0;
 
                 break; // leave for loop
             }
@@ -199,6 +200,11 @@ function update () {
         for(i=0; i<platforms.length; i++) {
             // move platform according to game speed
             platforms[i].x -= speed;
+
+            // move platform up/down
+            if (platforms[i].moveVert != 0) {
+                platforms[i].y -= (speed % 2) * platforms[i].moveVert;
+            }
             
             // draw platform
             ctx.beginPath();
@@ -214,7 +220,12 @@ function update () {
         if (ticks % nextPlat === 0) {
             ticks = 0;
             nextPlat = nextPlatL + ((Math.random() * nextPlatD)>>0);
-            platforms.push({x: canvas.width, y: Math.random() * canvas.height, length: 40});
+            var randHeight = Math.random() * canvas.height;
+            var vert = -1;
+            if (randHeight > canvas.height / 2) {
+                vert = 1;
+            }
+            platforms.push({x: canvas.width, y: randHeight, length: 40, moveVert: vert});
         }
 
         // draw man
@@ -251,5 +262,5 @@ window.addEventListener('keyup', function (e) {
 
 // start game - create a player, the first platform, start game loop
 myman = new man();
-platforms.push({x: (canvas.width/1.3), y: canvas.height/1.5, length: 50});
+platforms.push({x: (canvas.width/1.3), y: canvas.height/1.5, length: 50, moveVert: 0});
 update();
